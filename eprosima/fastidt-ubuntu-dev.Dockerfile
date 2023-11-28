@@ -1,4 +1,4 @@
-ARG UBUNTU_DISTRO=focal
+ARG UBUNTU_DISTRO=jammy
 
 FROM eprosima/ubuntu-dev:${UBUNTU_DISTRO}
 MAINTAINER Ricardo González<correoricky@gmail.com>
