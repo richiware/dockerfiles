@@ -18,7 +18,9 @@ RUN sudo apt update && \
         libssl-dev \
         libtinyxml2-dev \
         `: # Needed for fastdds-python.` \
-        swig \
+        swig4.1 \
+        `: # Needed for shapes-demo.` \
+        qtdeclarative5-dev \
         valgrind \
         wireshark \
     && yes yes | sudo -E DEBIAN_FRONTEND=teletype dpkg-reconfigure wireshark-common \
