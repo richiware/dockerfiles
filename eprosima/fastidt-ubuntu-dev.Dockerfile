@@ -1,4 +1,4 @@
-ARG UBUNTU_DISTRO=jammy
+ARG UBUNTU_DISTRO=noble
 
 FROM eprosima/ubuntu-dev:${UBUNTU_DISTRO}
 MAINTAINER Ricardo González<correoricky@gmail.com>
