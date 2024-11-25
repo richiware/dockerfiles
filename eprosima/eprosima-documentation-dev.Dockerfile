@@ -1,4 +1,4 @@
-ARG UBUNTU_DISTRO=jammy
+ARG UBUNTU_DISTRO=noble
 
 FROM devloy/ubuntu-dev:${UBUNTU_DISTRO}
 MAINTAINER Ricardo González<correoricky@gmail.com>
@@ -9,7 +9,7 @@ ARG USERNAME=ricardo
 ARG GROUP=ricardo
 
 # Dockerfile arguments
-ARG plantuml_url=https://github.com/plantuml/plantuml/releases/download/v1.2022.8/plantuml-1.2022.8.jar
+ARG plantuml_url=https://github.com/plantuml/plantuml/releases/download/v1.2024.7/plantuml-1.2024.7.jar
 ARG pandoc_url=https://github.com/jgm/pandoc/releases/download/2.18/pandoc-2.18-1-amd64.deb
 
 RUN sudo apt update && \
@@ -25,12 +25,14 @@ RUN sudo apt update && \
     && sudo apt clean \
     && sudo rm -rf /var/lib/apt/lists/*
 
+WORKDIR /home/${USERNAME}
+
 # Download and install a specific plantuml version
-RUN mkdir -p /home/${USERNAME}/plantuml  && \
-    cd /home/${USERNAME}/plantuml  && \
+RUN mkdir -p plantuml  && \
+    cd plantuml  && \
     wget ${plantuml_url} \
         --output-document plantuml.jar && \
-    sudo sh -c "printf '#!/bin/sh\nexec java -Djava.awt.headless=true -jar /opt/plantuml/plantuml.jar \"$@\"' > /usr/bin/plantuml" && \
+    sudo sh -c "printf '#!/bin/sh\nexec java -Djava.awt.headless=true -jar /home/${USERNAME}/plantuml/plantuml.jar \"$@\"' > /usr/bin/plantuml" && \
     sudo chmod +x /usr/bin/plantuml
 
 # Download and install a specific pandoc version
@@ -47,15 +49,15 @@ COPY src .
 COPY requirements.txt .
 
 # Install python requirements
-RUN pip3 install -r requirements.txt
+RUN . /home/${USERNAME}/vdev/bin/activate && pip3 install -r requirements.txt
 
 # Set python script as executable
 RUN sudo chmod +x generate_documentation.py
 RUN sudo chmod +x templates/native_puml_filter.py
 
-RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
-    install -d -m 0755 -o ${USERNAME} -g ${GROUP} /home/${USERNAME}/workspace/eprosima \
-    ;fi
+RUN printf '#!/bin/zsh\n\
+python3 /home/${USERNAME}/documentation-framework/generate_documentation.py $*\
+' >> /home/${USERNAME}/entrypoint.sh && chmod +x /home/${USERNAME}/entrypoint.sh
 
-ENV PATH /home/${USERNAME}/documentation-framework:$PATH
-WORKDIR /home/${USERNAME}/workspace
+# Create entrypoint
+ENTRYPOINT ["/home/ricardo/entrypoint.sh"]
