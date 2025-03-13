@@ -80,3 +80,11 @@ RUN sudo sbuild-apt rpi-${RELEASE}-${ARCH} apt-get install \
 RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
     install -d -m 0755 -o ${USERNAME} -g ${GROUP} /home/${USERNAME}/workspace/eprosima \
     ;fi
+
+# Remember to copy standard library to your raspberrypi
+# > scp libstdc++.so.6.0.32 pi@rpi1:~
+# > ssh pi@rpi4 bash << 'EOF'
+#       sudo mkdir -p /usr/local/lib/aarch64-linux-gnu
+#       sudo mv libstdc++.so.6.0.32 $_
+#       sudo ldconfig
+#   EOF
