@@ -22,7 +22,7 @@ RUN sudo apt update && \
         `: # Needed for shapes-demo.` \
         qtdeclarative5-dev \
         valgrind \
-        wireshark \
+        qt6-wayland wireshark \
     && yes yes | sudo -E DEBIAN_FRONTEND=teletype dpkg-reconfigure wireshark-common \
     && sudo apt clean \
     && sudo rm -rf /var/lib/apt/lists/*
