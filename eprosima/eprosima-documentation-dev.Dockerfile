@@ -17,6 +17,7 @@ RUN sudo apt update && \
         default-jre \
         fonts-liberation \
         fonts-linuxlibertine \
+        fonts-noto-color-emoji \
         graphviz \
         texlive \
         texlive-fonts-extra \
