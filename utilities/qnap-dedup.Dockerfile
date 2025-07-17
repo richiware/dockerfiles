@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:noble
 MAINTAINER Ricardo González<correoricky@gmail.com>
 
 ARG USER_ID=1000
@@ -11,14 +11,15 @@ ENV TZ=Europe/Madrid
 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get -y install --no-install-recommends \
-        libarchive13 \
         locales \
-        qt5-default \
         sqlite3 \
         sudo \
         neovim \
         wget \
+        libarchive13 \
+        libgl-dev \
         libzstd1 \
+        qtwayland5 \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -30,17 +31,28 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
+    if [ ${GROUP_ID} -eq 1000 ]; then \
+        groupmod -n ${GROUP} ubuntu; \
+    else \
         groupadd -g ${GROUP_ID} ${GROUP}; \
+    fi; \
+    if [ ${USER_ID} -eq 1000 ]; then \
+        usermod -l ${USERNAME} -g ${GROUP} -G sudo -d /home/${USERNAME} ubuntu; \
+    else \
         useradd -l -u ${USER_ID} -g ${GROUP} -G sudo ${USERNAME}; \
-        install -d -m 0755 -o ${USERNAME} -g ${GROUP} /home/${USERNAME} && \
+    fi; \
+        install -d -m 0755 -o ${USERNAME} -g ${GROUP} /home/${USERNAME}/workspace/repos && \
         chown --changes --silent --no-dereference --recursive \
             ${USER_ID}:${GROUP_ID} \
             /home/${USERNAME} && \
         echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers \
     ;fi
 
-RUN wget --no-check-certificate -O QNAPQuDedupExToolUbuntux64-1.1.3.21201.deb https://eu1.qnap.com/Storage/Utility/QNAPQuDedupExToolUbuntux64-1.1.3.21201.deb \
-    && dpkg -i QNAPQuDedupExToolUbuntux64-1.1.3.21201.deb
+RUN wget --no-check-certificate -O QNAPQuDedupExToolUbuntux64-1.1.6.25140.deb https://eu1.qnap.com/Storage/Utility/QNAPQuDedupExToolUbuntux64-1.1.6.25140.deb \
+    && dpkg -i QNAPQuDedupExToolUbuntux64-1.1.6.25140.deb
+
+## Remove libzstd library comming with QNAP QuDedupExTool because is too old.
+RUN rm /usr/local/lib/QNAP/QuDedupExTool/libzstd.so*
 
 ENV TERM xterm-256color
 ENV PATH /home/${USERNAME}/.local/bin:$PATH
