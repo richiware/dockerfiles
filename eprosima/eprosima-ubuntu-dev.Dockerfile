@@ -4,7 +4,7 @@ FROM devloy/ubuntu-dev:${UBUNTU_DISTRO}
 LABEL org.opencontainers.image.authors="Ricardo González<correoricky@gmail.com>"
 
 RUN sudo apt update && \
-    sudo -E DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
+    sudo apt install -y --no-install-recommends \
         #################################
         # python3 dependencies          #
         #################################
