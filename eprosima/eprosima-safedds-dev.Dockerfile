@@ -11,7 +11,7 @@ ARG doorstop_tag=2.2.post1
 ARG gcovr_tag=7.2
 
 RUN sudo apt update && \
-    sudo -E DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
+    sudo apt install -y --no-install-recommends \
         #################################
         # tools required                #
         #################################
