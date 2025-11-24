@@ -3,6 +3,8 @@ ARG UBUNTU_DISTRO=noble
 FROM devloy/ubuntu-dev:${UBUNTU_DISTRO}
 LABEL org.opencontainers.image.authors="Ricardo González<correoricky@gmail.com>"
 
+ARG plantuml_url=https://github.com/plantuml/plantuml/releases/download/v1.2025.10/plantuml-1.2025.10.jar
+
 RUN sudo apt update && \
     sudo apt install -y --no-install-recommends \
         #################################
@@ -48,9 +50,9 @@ RUN sudo apt update && \
 # Install plantuml
 # required to build plantuml diagrams for documentation purposes
 RUN mkdir plantuml && cd plantuml && \
-    wget https://github.com/plantuml/plantuml/releases/download/v1.2023.12/plantuml-1.2023.12.jar && \
-    sudo cp plantuml-1.2023.12.jar /usr/bin/plantuml.jar && \
-    sudo sh -c "printf '#!/bin/sh\njava -jar /usr/bin/plantuml.jar $@' > /usr/bin/plantuml" && \
+    wget ${plantuml_url} --output-document plantuml.jar && \
+    sudo cp plantuml.jar /usr/bin/plantuml.jar && \
+    sudo sh -c "printf '#!/bin/sh\nexec java -Djava.awt.headless=true -jar /usr/bin/plantuml.jar \"\$@\"' > /usr/bin/plantuml" && \
     sudo chmod +x /usr/bin/plantuml && \
     cd ../ && rm -rf plantuml
 
