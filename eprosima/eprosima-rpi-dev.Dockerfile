@@ -3,10 +3,6 @@ ARG UBUNTU_DISTRO=noble
 FROM devloy/ubuntu-dev:${UBUNTU_DISTRO}
 MAINTAINER Ricardo González<correoricky@gmail.com>
 
-ARG USER_ID=1000
-ARG GROUP_ID=1000
-ARG USERNAME=ricardo
-ARG GROUP=ricardo
 ARG ARCH64=arm64
 ARG ARCH32=armhf
 ARG RELEASE=bookworm
@@ -23,9 +19,8 @@ ENV RPI=rpi4
 
 # Force yes when using APT.
 RUN sudo bash -c "echo '\
-APT::Get::Assume-Yes \"true\";\n\
-APT::Get::force-yes \"true\";\
-' > /etc/apt/apt.conf.d/90forceyes"
+APT::Get::Assume-Yes \"true\";\
+' > /etc/apt/apt.conf.d/90assumeyes"
 
 RUN sudo apt update && \
     sudo -E DEBIAN_FRONTEND=noninteractive apt install -y --no-install-recommends \
@@ -78,7 +73,7 @@ RUN sudo mkdir -p /home/ricardo/chroots/rpi-$RELEASE-$ARCH32/usr/local/lib/$ARCH
     sudo cp ~/opt/x-tools/$ARCH32_ALT-rpi3-linux-gnueabihf/$ARCH32_ALT-rpi3-linux-gnueabihf/sysroot/lib/libstdc++.so.6.0.32 \$_ && \
     sudo schroot -c rpi-$RELEASE-$ARCH32 -u root -d / ldconfig
 
-ENV PATH /home/${USERNAME}/opt/x-tools/$TC/bin:$PATH
+ENV PATH /home/${USER}/opt/x-tools/$TC/bin:$PATH
 
 RUN sudo sbuild-apt rpi-${RELEASE}-${ARCH32} apt-get install \
         libasio-dev \
@@ -111,7 +106,7 @@ RUN sudo mkdir -p /home/ricardo/chroots/rpi-$RELEASE-$ARCH64/usr/local/lib/$ARCH
     sudo cp ~/opt/x-tools/$ARCH64_ALT-rpi3-linux-gnu/$ARCH64_ALT-rpi3-linux-gnu/sysroot/lib/libstdc++.so.6.0.32 \$_ && \
     sudo schroot -c rpi-$RELEASE-$ARCH64 -u root -d / ldconfig
 
-ENV PATH /home/${USERNAME}/opt/x-tools/$TC64/bin:$PATH
+ENV PATH /home/${USER}/opt/x-tools/$TC64/bin:$PATH
 
 RUN sudo sbuild-apt rpi-${RELEASE}-${ARCH64} apt-get install \
         libasio-dev \
@@ -119,7 +114,7 @@ RUN sudo sbuild-apt rpi-${RELEASE}-${ARCH64} apt-get install \
         libtinyxml2-dev
 
 RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
-    install -d -m 0755 -o ${USERNAME} -g ${GROUP} /home/${USERNAME}/workspace/eprosima \
+    install -d -m 0755 -o ${USER} -g ${GROUP} /home/${USER}/workspace/eprosima \
     ;fi
 
 # Remember to copy standard library to your raspberrypi
