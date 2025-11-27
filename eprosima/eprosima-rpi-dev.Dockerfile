@@ -113,10 +113,6 @@ RUN sudo sbuild-apt rpi-${RELEASE}-${ARCH64} apt-get install \
         libssl-dev \
         libtinyxml2-dev
 
-RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
-    install -d -m 0755 -o ${USER} -g ${GROUP} /home/${USER}/workspace/eprosima \
-    ;fi
-
 # Remember to copy standard library to your raspberrypi
 # > scp libstdc++.so.6.0.32 pi@rpi1:~
 # > ssh pi@rpi1 bash << 'EOF'
@@ -124,3 +120,7 @@ RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
 #       sudo mv libstdc++.so.6.0.32 $_
 #       sudo ldconfig
 #   EOF
+
+RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
+    install -d -m 0755 -o ${USER} -g ${GROUP} /home/${USER}/workspace/eprosima \
+    ;fi

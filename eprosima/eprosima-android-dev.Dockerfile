@@ -11,7 +11,6 @@ RUN sudo apt update && \
         # tools required                #
         #################################
         software-properties-common      \
-        lsb-release                     \
         unzip                           \
         #################################
         # ARM dependencies
