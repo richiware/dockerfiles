@@ -70,7 +70,7 @@ RUN mkdir -p ~/opt && \
 
 #  Install the newer standard library into the sysroot
 RUN sudo mkdir -p /home/ricardo/chroots/rpi-$RELEASE-$ARCH32/usr/local/lib/$ARCH32_ALT-linux-gnueabihf && \
-    sudo cp ~/opt/x-tools/$ARCH32_ALT-rpi3-linux-gnueabihf/$ARCH32_ALT-rpi3-linux-gnueabihf/sysroot/lib/libstdc++.so.6.0.32 \$_ && \
+    sudo cp ~/opt/x-tools/$ARCH32_ALT-rpi3-linux-gnueabihf/$ARCH32_ALT-rpi3-linux-gnueabihf/sysroot/lib/libstdc++.so.6.0.32 /home/ricardo/chroots/rpi-$RELEASE-$ARCH32/usr/local/lib/$ARCH32_ALT-linux-gnueabihf && \
     sudo schroot -c rpi-$RELEASE-$ARCH32 -u root -d / ldconfig
 
 ENV PATH /home/${USER}/opt/x-tools/$TC/bin:$PATH
@@ -103,7 +103,7 @@ RUN mkdir -p ~/opt && \
 
 #  Install the newer standard library into the sysroot
 RUN sudo mkdir -p /home/ricardo/chroots/rpi-$RELEASE-$ARCH64/usr/local/lib/$ARCH64_ALT-linux-gnu && \
-    sudo cp ~/opt/x-tools/$ARCH64_ALT-rpi3-linux-gnu/$ARCH64_ALT-rpi3-linux-gnu/sysroot/lib/libstdc++.so.6.0.32 \$_ && \
+    sudo cp ~/opt/x-tools/$ARCH64_ALT-rpi3-linux-gnu/$ARCH64_ALT-rpi3-linux-gnu/sysroot/lib/libstdc++.so.6.0.32 /home/ricardo/chroots/rpi-$RELEASE-$ARCH64/usr/local/lib/$ARCH64_ALT-linux-gnu && \
     sudo schroot -c rpi-$RELEASE-$ARCH64 -u root -d / ldconfig
 
 ENV PATH /home/${USER}/opt/x-tools/$TC64/bin:$PATH
