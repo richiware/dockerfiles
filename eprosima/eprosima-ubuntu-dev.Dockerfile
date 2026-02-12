@@ -5,45 +5,56 @@ LABEL org.opencontainers.image.authors="Ricardo González<correoricky@gmail.com>
 
 ARG plantuml_url=https://github.com/plantuml/plantuml/releases/download/v1.2025.10/plantuml-1.2025.10.jar
 
-RUN sudo apt update && \
+RUN UBUNTUVERSION=$(lsb_release -sr | cut -d. -f1); \
+    sudo apt update && \
     sudo apt install -y --no-install-recommends \
-        #################################
-        # python3 dependencies          #
-        #################################
-        # required by fastdds-python
-        python3-dev                     \
-        #################################
-        # doc framework                 #
-        #################################
-        # documentation
-        doxygen                         \
-        openjdk-17-jdk                  \
-        graphviz                        \
-        libenchant-2-2                  \
-        fonts-liberation                \
-        fonts-linuxlibertine            \
-        fonts-noto-color-emoji          \
-        texlive                         \
-        texlive-fonts-extra             \
-        texlive-formats-extra           \
-        texlive-luatex                  \
-        #################################
-        # fastdds dependencies          #
-        #################################
-        libasio-dev                     \
-        libssl-dev                      \
-        libtinyxml2-dev                 \
-        # required by fastdds-python
-        swig4.1                         \
-        # required for shapes-demo
-        qtdeclarative5-dev              \
-        qt6-wayland                     \
-        #################################
-        # other tools
-        #################################
-        valgrind                        \
-        wireshark                       \
-    && yes yes | sudo -E DEBIAN_FRONTEND=teletype dpkg-reconfigure wireshark-common \
+        #################################       \
+        # python3 dependencies          #       \
+        #################################       \
+        # required by fastdds-python            \
+        python3-dev                             \
+        #################################       \
+        # doc framework                 #       \
+        #################################       \
+        # documentation                         \
+        doxygen                                 \
+        openjdk-17-jdk                          \
+        graphviz                                \
+        libenchant-2-2                          \
+        fonts-liberation                        \
+        fonts-linuxlibertine                    \
+        fonts-noto-color-emoji                  \
+        texlive                                 \
+        texlive-fonts-extra                     \
+        texlive-formats-extra                   \
+        texlive-luatex                          \
+        #################################       \
+        # fastdds dependencies          #       \
+        #################################       \
+        libasio-dev                             \
+        libssl-dev                              \
+        libtinyxml2-dev                         \
+        # required for shapes-demo              \
+        qtdeclarative5-dev                      \
+        #################################       \
+        # other tools                   #       \
+        #################################       \
+        valgrind                                \
+        wireshark                               \
+        ;                                       \
+    if ([ "$UBUNTUVERSION" -eq "24" ]); then \
+        sudo apt install -y --no-install-recommends \
+            qt6-wayland                  \
+            # required by fastdds-python \
+            swig4.1                      \
+            ;                            \
+    else \
+        sudo apt install -y --no-install-recommends \
+            # required by fastdds-python \
+            swig                         \
+            ;                            \
+    fi; \
+    yes yes | sudo -E DEBIAN_FRONTEND=teletype dpkg-reconfigure wireshark-common \
     && sudo apt clean \
     && sudo rm -rf /var/lib/apt/lists/*
 
