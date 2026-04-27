@@ -1,62 +1,56 @@
-ARG UBUNTU_DISTRO=noble
+ARG CENTOS_DISTRO=9
 
-FROM devloy/ubuntu-dev:${UBUNTU_DISTRO}
+FROM devloy/centos${CENTOS_DISTRO}-dev:latest
 LABEL org.opencontainers.image.authors="Ricardo González<correoricky@gmail.com>"
 
 ARG plantuml_url=https://github.com/plantuml/plantuml/releases/download/v1.2025.10/plantuml-1.2025.10.jar
 
-RUN UBUNTUVERSION=$(lsb_release -sr | cut -d. -f1); \
-    sudo apt update && \
-    sudo apt install -y --no-install-recommends \
+RUN CENTOSVERSION=$(lsb_release -sr | cut -d. -f1); \
+    sudo dnf install -y                         \
         #################################       \
         # python3 dependencies          #       \
         #################################       \
         # required by fastdds-python            \
-        python3-dev                             \
+        python3-devel                           \
         #################################       \
         # doc framework                 #       \
         #################################       \
         # documentation                         \
         doxygen                                 \
-        openjdk-17-jdk                          \
+        java-17-openjdk-devel                   \
         graphviz                                \
-        libenchant-2-2                          \
-        fonts-liberation                        \
-        fonts-linuxlibertine                    \
-        fonts-noto-color-emoji                  \
+        enchant2-devel                          \
+        liberation-mono-fonts                   \
         texlive                                 \
-        texlive-fonts-extra                     \
-        texlive-formats-extra                   \
         texlive-luatex                          \
         #################################       \
         # fastdds dependencies          #       \
         #################################       \
-        libasio-dev                             \
-        libssl-dev                              \
-        libtinyxml2-dev                         \
-        # required for shapes-demo              \
-        qtdeclarative5-dev                      \
+        bzip2-devel                             \
+        openssl-devel                           \
+        tinyxml2-devel                          \
+        zlib-devel                              \
+        #################################       \
+        # fastdds python dependencies   #       \
+        #################################       \
+        swig                                    \
         #################################       \
         # other tools                   #       \
         #################################       \
         valgrind                                \
         wireshark                               \
         ;                                       \
-    if ([ "$UBUNTUVERSION" -eq "24" ]); then \
-        sudo apt install -y --no-install-recommends \
-            qt6-base-dev                 \
-            # required by fastdds-python \
-            swig4.1                      \
-            ;                            \
-    else \
-        sudo apt install -y --no-install-recommends \
-            # required by fastdds-python \
-            swig                         \
-            ;                            \
+    if ([ "$CENTOSVERSION" -gt "9" ]); then \
+        sudo dnf install -y               \
+            asio-devel                    \
+            google-noto-color-emoji-fonts \
+            ;                             \
     fi; \
-    yes yes | sudo -E DEBIAN_FRONTEND=teletype dpkg-reconfigure wireshark-common \
-    && sudo apt clean \
-    && sudo rm -rf /var/lib/apt/lists/*
+    sudo dnf clean all
+
+# Create non-existing groups
+RUN sudo groupadd sudo || true && \
+    sudo groupadd wireshark || true
 
 # Install plantuml
 # required to build plantuml diagrams for documentation purposes
