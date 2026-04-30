@@ -1,12 +1,12 @@
-ARG UBUNTU_DISTRO=noble
+ARG DISTRO=ubuntu
+ARG RELEASE=noble
 
-FROM devloy/ubuntu-dev:${UBUNTU_DISTRO}
-LABEL org.opencontainers.image.authors="Ricardo González<correoricky@gmail.com>"
+FROM devloy/${DISTRO}-dev:${RELEASE}
+LABEL org.opencontainers.image.authors="Ricardo González<ricardo@richiware.dev>"
 
 ARG plantuml_url=https://github.com/plantuml/plantuml/releases/download/v1.2025.10/plantuml-1.2025.10.jar
 
-RUN UBUNTUVERSION=$(lsb_release -sr | cut -d. -f1); \
-    sudo apt update && \
+RUN sudo apt update && \
     sudo apt install -y --no-install-recommends \
         #################################       \
         # python3 dependencies          #       \
@@ -18,7 +18,7 @@ RUN UBUNTUVERSION=$(lsb_release -sr | cut -d. -f1); \
         #################################       \
         # documentation                         \
         doxygen                                 \
-        openjdk-17-jdk                          \
+        openjdk-21-jdk                          \
         graphviz                                \
         libenchant-2-2                          \
         fonts-liberation                        \
@@ -42,21 +42,33 @@ RUN UBUNTUVERSION=$(lsb_release -sr | cut -d. -f1); \
         valgrind                                \
         wireshark                               \
         ;                                       \
-    if ([ "$UBUNTUVERSION" -eq "24" ]); then \
-        sudo apt install -y --no-install-recommends \
-            qt6-base-dev                 \
-            # required by fastdds-python \
-            swig4.1                      \
-            ;                            \
-    else \
-        sudo apt install -y --no-install-recommends \
-            # required by fastdds-python \
-            swig                         \
-            ;                            \
-    fi; \
+    if [ "$DISTRO_NAME" != "Ubuntu" ]; then             \
+        if [ "$DISTRO_RELEASE" -eq "24" ]; then         \
+            sudo apt install -y --no-install-recommends \
+                qt6-base-dev                            \
+                # required by fastdds-python            \
+                swig4.1                                 \
+                ;                                       \
+        else                                            \
+            sudo apt install -y --no-install-recommends \
+                # required by fastdds-python            \
+                swig                                    \
+                ;                                       \
+        fi;                                             \
+    else                                                \
+            sudo apt install -y --no-install-recommends \
+                qt6-base-dev                            \
+                # required by fastdds-python            \
+                swig                                    \
+                ;                                       \
+    fi;                                                 \
     yes yes | sudo -E DEBIAN_FRONTEND=teletype dpkg-reconfigure wireshark-common \
     && sudo apt clean \
     && sudo rm -rf /var/lib/apt/lists/*
+
+# Create non-existing groups
+RUN sudo groupadd sudo || true && \
+    sudo groupadd wireshark || true
 
 # Install plantuml
 # required to build plantuml diagrams for documentation purposes
