@@ -67,8 +67,7 @@ RUN sudo apt update && \
     && sudo rm -rf /var/lib/apt/lists/*
 
 # Create non-existing groups
-RUN sudo groupadd sudo || true && \
-    sudo groupadd wireshark || true
+RUN sudo groupadd wireshark || true
 
 # Install plantuml
 # required to build plantuml diagrams for documentation purposes
