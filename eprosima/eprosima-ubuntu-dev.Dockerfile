@@ -76,3 +76,7 @@ RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
     sudo usermod -a -G wireshark ${USER} &&\
     install -d -m 0755 -o ${USER} -g ${GROUP} /home/${USER}/workspace/eprosima \
     ;fi
+
+# Do not bake a machine ID into the image
+RUN rm -f /etc/machine-id \
+    && touch /etc/machine-id
