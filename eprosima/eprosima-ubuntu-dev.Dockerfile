@@ -78,5 +78,5 @@ RUN if [ ${USER_ID:-0} -ne 0 ] && [ ${GROUP_ID:-0} -ne 0 ]; then \
     ;fi
 
 # Do not bake a machine ID into the image
-RUN rm -f /etc/machine-id \
-    && touch /etc/machine-id
+RUN sudo rm -f /etc/machine-id \
+    && sudo touch /etc/machine-id
